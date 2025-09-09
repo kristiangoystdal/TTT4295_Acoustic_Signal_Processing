@@ -1,0 +1,93 @@
+\documentclass[english]{report}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper]{geometry}
+\geometry{verbose,tmargin=3cm,bmargin=4cm,lmargin=3cm,rmargin=3cm}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{babel}
+\usepackage{textcomp}
+\usepackage[
+  unicode=true,bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+  breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=true
+]{hyperref}
+\usepackage{breakurl}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{fixltx2e}
+
+\graphicspath{{figures/}}
+
+\begin{document}
+
+% Front page (keep your current front page code inline here)
+\pagestyle{empty} %No headings for the first pages.
+\newcommand{\HRule}{\rule{\linewidth}{1mm}}
+\begin{center}
+\vspace*{\stretch{0.3}}
+\end{center}
+
+\begin{center}
+\textbf {TTT4295 - Acoustic Signal Processing}
+\vspace*{\stretch{0.1}}
+\end{center}
+
+
+\begin{center}
+  \large
+  \textbf{Assigment 1}\\
+  \vspace*{\stretch{0.2}}
+  \huge
+  \textbf{Music Box\\}
+  \vspace*{\stretch{0.5}}
+  \small
+  \noindent performed by \\
+  \vspace*{\stretch{0.2}}
+  \large
+  \noindent Kristian Gøystdal\\Person 2\\Person 3\\
+  \vspace*{\stretch{0.5}} 
+  \small
+  \noindent Report by \\
+  \vspace*{\stretch{0.2}}
+  \large
+  \noindent Kristian Gøystdal\\
+   \vspace*{\stretch{1.4}}
+\end{center}
+
+\vspace*{\stretch{2}}
+\begin{center}
+\textsc{Department of Electronic Systems}\\
+\textsc{Norwegian University of Science and Technology}
+\end{center}
+
+\cleardoublepage
+\pagenumbering{roman} 
+
+
+\cleardoublepage
+\pagenumbering{roman}
+\pagestyle{plain}
+
+% Include parts
+\include{tex/00_frontmatter/00_summary}
+
+\tableofcontents
+\cleardoublepage
+\pagenumbering{arabic}
+
+
+\include{tex/01_chapters/01_introduction}
+\include{tex/01_chapters/02_theory}
+\include{tex/01_chapters/03_method_equipment}
+\include{tex/01_chapters/04_results}
+\include{tex/01_chapters/05_discussion}
+\include{tex/01_chapters/06_conclusions}
+
+\include{tex/02_backmatter/01_references}
+\appendix
+\include{tex/02_backmatter/02_appendix_a}
+\include{tex/02_backmatter/03_appendix_b}
+
+
+\end{document}
