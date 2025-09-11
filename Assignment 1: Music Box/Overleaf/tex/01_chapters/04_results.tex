@@ -4,7 +4,7 @@
 
 The audio signal was successfully segmented into individual notes based on the manually selected time splits. Each segment corresponds to a distinct note played by the music box. As seen in \autoref{fig:time_plot_segment_1}, the waveform of Segment 1 clearly shows the onset and decay of the note, and shows that there note is allowed to die out before another note occurs. This segmentation allows for isolated analysis of each note's frequency content.
 
-\begin{figure}[ht]
+\begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{data/time_plots/time_plot_segment_1.png}
     \caption{Waveform of Segment 1}
@@ -18,7 +18,7 @@ The audio signal was successfully segmented into individual notes based on the m
 
 If we look at the FFT of Segment 1 in \autoref{fig:fft_segment_1}, we can see that the fundamental frequency is approximately 1106.56 Hz. 
 
-\begin{figure}[ht]
+\begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{data/fft_spectrums/fft_spectrum_segment_1.png}
     \caption{FFT of Segment 1 with identified peaks}
@@ -29,7 +29,7 @@ If we look at the FFT of Segment 1 in \autoref{fig:fft_segment_1}, we can see th
 
 Also as seen in \autoref{fig:fft_segment_1}, the harmonic peaks are identified by looking for peaks in the FFT magnitude spectrum that are integer multiples of the fundamental frequency. The deviation of the actual harmonic peaks from the perfect harmonic frequencies is calculated in cents and is summarized in Table \ref{tab:deviation_segment_1}. 
 
-\begin{table}[ht]
+\begin{table}[H]
     \centering
     \caption{Deviation of Harmonic Peaks from Perfect Harmonics for Segment 1}
     \begin{tabular}{ccc}
@@ -53,7 +53,7 @@ Using \autoref{eq:note_freq}, the identified peak frequencies were mapped to the
 
 The melody frequencies and their corresponding notes are summarized in \autoref{tab:melody_freq_notes}. Also the deviation in cents from the ideal frequency is included in this table.
 
-\begin{table}[h]
+\begin{table}[H]
     \centering
     \caption{Identified Melody Frequencies, Corresponding Notes, and Deviation in Cents}
     \begin{tabular}{cccc}
@@ -114,7 +114,7 @@ The melody frequencies and their corresponding notes are summarized in \autoref{
 
 The bass frequencies and their corresponding notes are summarized in \autoref{tab:bass_freq_notes}. 
 
-\begin{table}[h]
+\begin{table}[H]
     \centering
     \caption{Identified Bass Frequencies, Corresponding Notes, and Deviation in Cents}
     \begin{tabular}{cccc}
