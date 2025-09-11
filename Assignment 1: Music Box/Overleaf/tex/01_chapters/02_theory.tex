@@ -3,24 +3,26 @@
 
 \section{FFT} 
 
-Explain the theory behind FFT and how it is used to analyze signals in the frequency domain. Include relevant equations and concepts.
+The Fast Fourier Transform (FFT) is an algorithm that can be used compute the Discrete Fourier Transform (DFT) of a time signal. The DFT converts a sequence of complex numbers in the time domain into another sequence of complex numbers in the frequency domain. 
 
-\section{Windowing}
-
-Explain the concept of windowing in signal processing. Discuss different types of windows (e.g., Hamming, Hanning, Blackman) and their effects on spectral leakage and resolution.
-
-\section{Room Impulse Response}
-
-Explain the concept of room impulse response (RIR) and its significance in acoustics. Discuss how RIR can be measured and analyzed.
+To increase the efficiency of the FFT, zero-padding can be used to increase the length of a signal by appending zeros to its end. This will improve the frequency resolution of the FFT, as the frequency bins will be more closely spaced without changing the actual frequency content of the signal. 
 
 
-% The theory section should not be a copy of the assigment text. Use your own words and use literature references as a reference to where more information on a topic can be found. 
-% The theory part should only contain the theory which is necessary to interpret and understand the results. The exercise text could be put away and the lab report serves as background material.  You are not expected to present derivations of equations that can be found in other literature. However, if you make any derivations yourself, for instance in your analysis of the results, they should be included.
+\section{Note Frequency Calculation}
 
-% All equations should be numbered:
-% \begin{equation}
-% x^{2}+x-3=0
-% \label{eq:Equation}
-% \end{equation}
-% When writing, you should refer to the equations using \textit{eqref} like this: ... as can be seen in eq.\eqref{eq:Equation}. A rule of thumb is that every equation should be referred to in the text, otherwise it is superfluous. 
+The frequency of a musical note can be calculated using the formula:
+\begin{equation}
+f = f_0 \cdot 2^{\frac{n - n_0}{12}}
+\label{eq:note_freq}
+\end{equation}
+where \( f \) is the frequency of the note, \( f_0 \) is the reference frequency (440 Hz for A4), \( n \) is the number of semitones away from the reference note, and \( n_0 \) is the semitone index of the reference note (A4=9).
 
+
+\section{Musical Notes and Frequencies}
+
+Deviation in cents can be calculated using the formula:
+\begin{equation}
+\text{Cents} = 1200 \cdot \log_2\left(\frac{f_{\text{actual}}}{f_{\text{ideal}}}\right)
+\label{eq:deviation_cents}
+\end{equation}
+where \( f_{\text{actual}} \) is the frequency of the detected peak, and \( f_{\text{ideal}} \) is the ideal frequency of the corresponding note. Deviation in cents provides a measure of how much a note is out of tune relative to the ideal frequency, where 100 cents is equal to one semitone.

@@ -1,25 +1,137 @@
-\chapter{Results}\label{ch:Results}
+\chapter{Results}
 
-The Results chapter should describe all the results obtained in the experiments, and give comments/discussions to the results (but see also what is written in the Discussions chapter). 
-\begin{itemize}
-\item All kinds of figures/diagrams (figure captions should be centered below the diagram), tables (table captions should be centered above the table), and appendices should be numbered. 
-\item {\em Diagrams should be marked with quantities, units and values for both axes}. Measurement series that are compared, or comparisons with calculated values, should be presented in the same diagram. All variables, constants and abbreviations that are not obvious must be explained. 
-\item Some types of results are more suitable to present in tables rather than diagrams, as curves.
-Large tables should be placed in the appendices. 
-\item Measurement results should be commented, with an analysis and an evaluation of the results and measurement data with the aim of drawing a conclusion. If possible, the sources of error should be brought up and their possible effect on the results considered. If relevant, deviations should be quantified and given in percent. As mentioned above, see also what is written in the Discussions chapter.
-\item {\em Do not present the same data twice}. If you think a curve is the best way to represent the data, leave out the table containing the same data and vice versa.
-\end{itemize}
+\section{Segmented Audio Signal}
 
-If you want to present tables, \url{http://www.tablesgenerator.com/} might be of interest. Tables should be referred to as follows and look something like Table \ref{tab:Table}
- 
-\begin{table}[h] %h (here) can be replaced by H,t (top), and b (bottom) etc. for different positions. This space in between the square brackets can also be left empty for Latex to choose position.
+The audio signal was successfully segmented into individual notes based on the manually selected time splits. Each segment corresponds to a distinct note played by the music box. As seen in \autoref{fig:time_plot_segment_1}, the waveform of Segment 1 clearly shows the onset and decay of the note, and shows that there note is allowed to die out before another note occurs. This segmentation allows for isolated analysis of each note's frequency content.
+
+\begin{figure}[ht]
     \centering
-    \caption{The caption should be above tables.}    
-    \begin{tabular}{lll}
-       & Value & Unit                 \\ \hline
-    Length & 1     & m                    \\
-    Volume & 2.5   & m\textsuperscript{3}
-    \label{tab:Table}
+    \includegraphics[width=\textwidth]{figures/time_plots/time_plot_segment_1.png}
+    \caption{Waveform of Segment 1}
+    \label{fig:time_plot_segment_1}
+\end{figure}
+
+
+\section{FFT Analysis of Music Box Recording}
+
+\subsection{Segmented FFT Analysis}
+
+If we look at the FFT of Segment 1 in \autoref{fig:fft_segment_1}, we can see that the fundamental frequency is approximately 1106.56 Hz. 
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{figures/fft_spectrums/fft_spectrum_segment_1.png}
+    \caption{FFT of Segment 1 with identified peaks}
+    \label{fig:fft_segment_1}
+\end{figure}
+
+\subsection{Overharmonic Peaks Identification}
+
+Also as seen in \autoref{fig:fft_segment_1}, the harmonic peaks are identified by looking for peaks in the FFT magnitude spectrum that are integer multiples of the fundamental frequency. The deviation of the actual harmonic peaks from the perfect harmonic frequencies is calculated in cents and is summarized in Table \ref{tab:deviation_segment_1}. We can see that the deviation increases with higher harmonics, indicating that the music box's tuning is not perfectly harmonic.
+
+\begin{table}[ht]
+    \centering
+    \caption{Deviation of Harmonic Peaks from Perfect Harmonics for Segment 1}
+    \begin{tabular}{ccc}
+        \hline
+        Harmonic & Actual Frequency (Hz) & Deviation (cents) \\
+        \hline
+        1st (Fundamental) & 1106.56 & 0 \\
+        2nd & 2213.12 & 0 \\
+        3rd & 3319.68 & -5.85 \\
+        4th & 4426.24 & -11.73 \\
+        5th & 5532.80 & -17.61 \\
+        \hline
     \end{tabular}
+    \label{tab:deviation_segment_1}
+\end{table}
+
+
+\section{Note Identification and Melody Extraction}
+
+Using \autoref{eq:note_freq}, the identified peak frequencies were mapped to their corresponding musical notes. The notes were then categorized into melody and bass based on their frequencies. Notes above middle C (approximately 261.63 Hz) were classified as melody, while those below were classified as bass.
+
+The melody frequencies and their corresponding notes are summarized in \autoref{tab:melody_freq_notes}. Also the deviation in cents from the ideal frequency is included, which shows how well the music box is tuned.
+
+\begin{table}[h]
+    \centering
+    \caption{Identified Melody Frequencies, Corresponding Notes, and Deviation in Cents}
+    \begin{tabular}{cccc}
+        \hline
+        Segment & Frequency (Hz) & Note & Deviation (cents) \\
+        \hline
+        1  & 1106.56 & C\#6  & -3.39   \\
+        3  & 1174.57 & D6    & -0.13   \\
+        5  & 1319.50 & E6    & 1.30    \\
+        6  & 1401.42 & F6    & 5.58    \\
+        7  & 591.87  & D5    & 13.33   \\
+        8  & 1105.89 & C\#6  & -4.44   \\
+        10 & 1171.75 & D6    & -4.29   \\
+        11 & 1319.41 & E6    & 1.19    \\
+        12 & 1396.42 & F6    & -0.61   \\
+        13 & 1863.25 & A\#6  & -1.30   \\
+        15 & 591.91  & D5    & 13.45   \\
+        16 & 1767.40 & A6    & 7.27    \\
+        17 & 1174.57 & D6    & -0.13   \\
+        18 & 1401.38 & F6    & 5.53    \\
+        19 & 1751.76 & A6    & -8.12   \\
+        20 & 1171.62 & D6    & -4.48   \\
+        21 & 1656.67 & G\#6  & -4.75   \\
+        22 & 5145.13 & E8    & -42.84  \\
+        25 & 1562.33 & G6    & -6.25   \\
+        26 & 1396.63 & F6    & -0.35   \\
+        27 & 1173.52 & D6    & -1.68   \\
+        28 & 1047.30 & C6    & 1.33    \\
+        29 & 1171.67 & D6    & -4.42   \\
+        30 & 470.87  & A\#4  & 17.39   \\
+        31 & 591.91  & D5    & 13.45   \\
+        33 & 1106.44 & C\#6  & -3.59   \\
+        34 & 1174.57 & D6    & -0.13   \\
+        36 & 1319.46 & E6    & 1.24    \\
+        37 & 1770.05 & A6    & 9.86    \\
+        38 & 1401.30 & F6    & 5.43    \\
+        39 & 591.91  & D5    & 13.45   \\
+        40 & 1106.14 & C\#6  & -4.05   \\
+        41 & 1171.79 & D6    & -4.23   \\
+        42 & 699.70  & F5    & 3.09    \\
+        43 & 1319.41 & E6    & 1.19    \\
+        44 & 1396.34 & F6    & -0.72   \\
+        45 & 1863.55 & A\#6  & -1.03   \\
+        46 & 591.87  & D5    & 13.33   \\
+        47 & 1757.56 & A6    & -2.40   \\
+        49 & 1401.26 & F6    & 5.37    \\
+        50 & 1767.24 & A6    & 7.10    \\
+        51 & 1767.53 & A6    & 7.39    \\
+        52 & 2337.53 & D7    & -8.71   \\
+        53 & 470.83  & A\#4  & 17.24   \\
+        54 & 1106.60 & C\#6  & -3.32   \\
+        55 & 1562.38 & G6    & -6.20   \\
+        56 & 2211.57 & C\#7  & -4.61   \\
+        \hline
+    \end{tabular}
+    \label{tab:melody_freq_notes}
+\end{table}
+
+The bass frequencies and their corresponding notes are summarized in \autoref{tab:bass_freq_notes}. The bass primarily consists of notes in the 1st and 2nd octaves, indicating a lower pitch range typical for bass lines. The deviation from the ideal frequency for each note is also shown in cents.
+
+\begin{table}[h]
+    \centering
+    \caption{Identified Bass Frequencies, Corresponding Notes, and Deviation in Cents}
+    \begin{tabular}{cccc}
+        \hline
+        Segment & Frequency (Hz) & Note & Deviation (cents) \\
+        \hline
+        2  & 53.20  & G\#1  & +42.46 \\
+        4  & 86.85  & F2    & -9.13  \\
+        9  & 53.83  & A1    & -37.13 \\
+        14 & 56.31  & A1    & +40.89 \\
+        23 & 57.11  & A\#1  & -34.72 \\
+        24 & 59.26  & A\#1  & +29.10 \\
+        32 & 76.80  & D\#2  & -22.08 \\
+        35 & 42.86  & F1    & -31.92 \\
+        48 & 87.86  & F2    & +10.87 \\
+        \hline
+    \end{tabular}
+    \label{tab:bass_freq_notes}
 \end{table}
 

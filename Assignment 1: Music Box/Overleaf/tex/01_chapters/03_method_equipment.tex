@@ -8,15 +8,24 @@ When playing the music box, we made sure that each note from the music box was p
 
 \section{Post-processing}
 
+To process the recording, Python was used with the libraries NumPy, Matplotlib and SoundDevice. The recording was loaded into Python using the SoundDevice library, and then split into individual notes by manually selecting the start and end points of each note in the waveform. The starting point of a segment was chosen to be just before the note started, and the end point was chosen to be the startpoint of the next note. This was to ensure that the full note was captured and that it had decayed fully before the next note started.
 
-This chapter should describe how the measurements were performed and which equipment was used. The description should be so complete that the measurements could be reconstructed by someone else. The equipment list should contain equipment type, model (often, instrument registration numbers are expected but we don't expect that for these reports). 
+\subsection{FFT}
 
-A sketch of the setup is often a good way to complement your description of the measurement procedure. A sketch can be seen in Fig.  and should be referred to like this: ... as illustrated in Fig.. A figure should {\em not} be referred to like this: "... as shown in the figure below....."\footnote{One reason for not refering to "the figure below" is that Latex software typically moves figures around and then referring to "the figure below" will not work.}
+To analyze the frequency content of each note, Fast Fourier Transform (FFT) was used. The FFT was computed using the NumPy library, which provides an efficient implementation of the algorithm.
 
+To ensure that the FFT has enough frequency resolution, the length of each note segment was adjusted to be a power of two. This was achieved by zero-padding, which means finding the next power of two greater than the longest note segment, and padding the shorter segments with zeros to match this length. 
 
-\section{\label{sec:Measurement-procedure}Measurement procedure}
-Explain the measurement procedure. Again, the procedure should be explained in enough detail that someone else could carry out an equivalent experiment.
+The FFT was then computed for each segment, and the peak frequencies were identified using the NumPy function \texttt{np.argmax()}. The peak frequencies were then plotted using Matplotlib, with the highest peak set to 0 dB.
 
-\section{Equipment}
-List the relevant equipment: manufacturer and model number. Often, instrument registration numbers are expected but we don't expect that for these assignment reports.
+Harmonic peaks were identified by looking for peaks in the FFT magnitude spectrum that were integer multiples of the fundamental frequency. This was done by looking at the spectrum and identifying peaks that were evenly spaced apart. These were then marked on the plot using vertical lines.
 
+Using the peak frequencies, the perfect harmonic peaks were calculated by multiplying the fundamental frequency by integers (2, 3, 4, etc.). These were used to compare with the actual harmonic peaks identified in the FFT and calculate the deviation in cents.
+
+\subsection{Note identification}
+
+To identify the musical notes corresponding to the detected frequencies, the standard tuning frequency of A4 (440 Hz) was used as a reference. The frequency-to-note mapping was done using \autoref{eq:note_freq}, which calculates the note number from the frequency. The resulting \( n \) value was rounded to the nearest integer to determine the closest musical note. 
+
+The note names were then determined using a predefined list of note names corresponding to MIDI note numbers. The octave was calculated by dividing the MIDI note number by 12 and adjusting for the octave offset, which in this case was 4.
+
+The identified notes were then categorized into melody and bass based on their frequencies. Notes with frequencies above middle C (approximately 261.63 Hz) were classified as melody, while those below were classified as bass. 
