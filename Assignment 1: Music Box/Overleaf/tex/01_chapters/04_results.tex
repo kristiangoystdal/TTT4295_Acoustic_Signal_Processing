@@ -6,7 +6,7 @@ The audio signal was successfully segmented into individual notes based on the m
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{figures/time_plots/time_plot_segment_1.png}
+    \includegraphics[width=\textwidth]{data/time_plots/time_plot_segment_1.png}
     \caption{Waveform of Segment 1}
     \label{fig:time_plot_segment_1}
 \end{figure}
@@ -20,14 +20,14 @@ If we look at the FFT of Segment 1 in \autoref{fig:fft_segment_1}, we can see th
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{figures/fft_spectrums/fft_spectrum_segment_1.png}
+    \includegraphics[width=\textwidth]{data/fft_spectrums/fft_spectrum_segment_1.png}
     \caption{FFT of Segment 1 with identified peaks}
     \label{fig:fft_segment_1}
 \end{figure}
 
 \subsection{Overharmonic Peaks Identification}
 
-Also as seen in \autoref{fig:fft_segment_1}, the harmonic peaks are identified by looking for peaks in the FFT magnitude spectrum that are integer multiples of the fundamental frequency. The deviation of the actual harmonic peaks from the perfect harmonic frequencies is calculated in cents and is summarized in Table \ref{tab:deviation_segment_1}. We can see that the deviation increases with higher harmonics, indicating that the music box's tuning is not perfectly harmonic.
+Also as seen in \autoref{fig:fft_segment_1}, the harmonic peaks are identified by looking for peaks in the FFT magnitude spectrum that are integer multiples of the fundamental frequency. The deviation of the actual harmonic peaks from the perfect harmonic frequencies is calculated in cents and is summarized in Table \ref{tab:deviation_segment_1}. 
 
 \begin{table}[ht]
     \centering
@@ -51,7 +51,7 @@ Also as seen in \autoref{fig:fft_segment_1}, the harmonic peaks are identified b
 
 Using \autoref{eq:note_freq}, the identified peak frequencies were mapped to their corresponding musical notes. The notes were then categorized into melody and bass based on their frequencies. Notes above middle C (approximately 261.63 Hz) were classified as melody, while those below were classified as bass.
 
-The melody frequencies and their corresponding notes are summarized in \autoref{tab:melody_freq_notes}. Also the deviation in cents from the ideal frequency is included, which shows how well the music box is tuned.
+The melody frequencies and their corresponding notes are summarized in \autoref{tab:melody_freq_notes}. Also the deviation in cents from the ideal frequency is included in this table.
 
 \begin{table}[h]
     \centering
@@ -112,7 +112,7 @@ The melody frequencies and their corresponding notes are summarized in \autoref{
     \label{tab:melody_freq_notes}
 \end{table}
 
-The bass frequencies and their corresponding notes are summarized in \autoref{tab:bass_freq_notes}. The bass primarily consists of notes in the 1st and 2nd octaves, indicating a lower pitch range typical for bass lines. The deviation from the ideal frequency for each note is also shown in cents.
+The bass frequencies and their corresponding notes are summarized in \autoref{tab:bass_freq_notes}. 
 
 \begin{table}[h]
     \centering
