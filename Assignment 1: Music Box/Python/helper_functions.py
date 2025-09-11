@@ -68,7 +68,7 @@ def plot_waveform(segment, framerate, title="Waveform of Segment", index=None):
     plt.close()
 
 
-def get_saving_path(folder, filename, index=None, filetype="txt"):
+def get_saving_path(folder, filename, index=None):
     script_dir = os.path.dirname(os.path.abspath(__file__))
     script_dir = os.path.dirname(script_dir)
     save_path = os.path.join(
@@ -76,7 +76,7 @@ def get_saving_path(folder, filename, index=None, filetype="txt"):
         "Overleaf",
         "data",
         folder,
-        "{}{}.{}".format(filename, index if index is not None else "", filetype),
+        "{}{}".format(filename, index if index is not None else ""),
     )
 
     return save_path
