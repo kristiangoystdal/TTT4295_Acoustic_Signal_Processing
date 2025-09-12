@@ -16,6 +16,8 @@ The audio signal was successfully segmented into individual notes based on the m
 
 \subsection{Segmented FFT Analysis}
 
+For each segment, the frequency resolution was calculated using \autoref{eq:freq_resolution}, taking into account the zero-padding applied to each segment. A frequency resolution of approximately 0.04 Hz was achieved for all segments after zero-padding. 
+
 If we look at the FFT of Segment 1 in \autoref{fig:fft_segment_1}, we can see that the fundamental frequency is approximately 1106.56 Hz. 
 
 \begin{figure}[H]
@@ -27,7 +29,11 @@ If we look at the FFT of Segment 1 in \autoref{fig:fft_segment_1}, we can see th
 
 \subsection{Overharmonic Peaks Identification}
 
-Also as seen in \autoref{fig:fft_segment_1}, the harmonic peaks are identified by looking for peaks in the FFT magnitude spectrum that are integer multiples of the fundamental frequency. The deviation of the actual harmonic peaks from the perfect harmonic frequencies is calculated in cents and is summarized in Table \ref{tab:deviation_segment_1}. 
+Also as seen in \autoref{fig:fft_segment_1}, the harmonic peaks are identified by looking for peaks in the FFT magnitude spectrum that are integer multiples of the fundamental frequency. These are classified as Group A peaks, since they are harmonic to the fundamental frequency. 
+
+The Group B peaks, which are not harmonic to the fundamental frequency, are also identified in \autoref{fig:fft_segment_1}. These peaks do not correspond to integer multiples of the fundamental frequency and are likely due to other resonances or noise in the recording. The peak at approximately 1645 Hz is an example of a Group B peak. There is also a peak closer to 60 Hz, which is likely due to noise from the surrounding environment.
+
+The deviation of the actual harmonic peaks from the perfect harmonic frequencies is calculated in cents and is summarized in Table \ref{tab:deviation_segment_1}. 
 
 \begin{table}[H]
     \centering

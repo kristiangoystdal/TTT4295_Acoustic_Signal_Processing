@@ -2,13 +2,13 @@
 
 \section{Recording setup}
 
-To achieve the recording used for this assignment, a smartphone was used to record the sound of a music box in a quiet room. The phone was placed on a table next to the music box, approximately 10 cm away from it. The recording was done using a application that allows for lossless audio recordings in the WAV format. 
+To achieve the recording used for this assignment, a smartphone was used to record the sound of a music box in a quiet room. The phone was placed on a table next to the music box, approximately 10 cm away from it. The recording was done using a application that allows for lossless audio recordings in the WAV format, with a sampling frequency of 44.1 kHz and a bit depth of 16 bits.
 
 When playing the music box, we made sure that each note from the music box was played separately, allowing for a clear split between the notes in the recording later. Some notes were played at the same time as an accord, which we couldnt avoid due to the setup of the music box. 
 
 \section{Post-processing}
 
-To process the recording, Python was used with the libraries NumPy, Matplotlib and SoundDevice. The recording was loaded into Python using the SoundDevice library, and then split into individual notes by manually selecting the start and end points of each note in the waveform. The starting point of a segment was chosen to be just before the note started, and the end point was chosen to be the startpoint of the next note. This was to ensure that the full note was captured and that it had decayed fully before the next note started.
+To process the recording, Python was used with the libraries NumPy, Matplotlib and SoundDevice. The recording was loaded into Python using the SoundDevice library, and then split into individual notes by manually selecting the start and end points of each note in the waveform. The starting point of a segment was chosen to be just before the note started, and the end point was chosen to be the startpoint of the next note. This was to ensure that the full note was captured and that it had decayed fully before the next note started. This was the starting length of each segment for the FFT, before zero-padding was applied. 
 
 \subsection{FFT}
 
