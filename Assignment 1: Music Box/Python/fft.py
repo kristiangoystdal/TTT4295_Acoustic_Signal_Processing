@@ -40,7 +40,7 @@ def plot_fft(
     index=None,
 ):
     # Plot the FFT magnitude spectrum with the highest peak as 0 dB
-    magnitude = magnitude / np.max(magnitude)  # Normalize to max value
+    magnitude = magnitude / np.max(magnitude)
 
     plt.figure(figsize=(10, 4))
     plt.plot(fft_freqs, magnitude)
@@ -51,15 +51,17 @@ def plot_fft(
                 plt.axvline(
                     x=peak, color="r", linestyle="--", label=f"Peak: {peak:.2f} Hz"
                 )
+        if index == 1:
+            plt.axvline(x=1645, color="g", linestyle="--", label=f"Peak: 1645 Hz")
         plt.legend(loc="upper right")
-    # plt.title(title)
+
     plt.xlabel("Frequency (Hz)")
     plt.ylabel("Magnitude (Normalized)")
     plt.xlim(0, xlim)
-    plt.ylim(1e-6, 1.2)  # Set y-limits for normalized magnitude
-
+    plt.ylim(1e-6, 1.2)
     plt.grid(True)
     plt.tight_layout()
+
     script_dir = os.path.dirname(os.path.abspath(__file__))
     script_dir = os.path.dirname(script_dir)
     save_path = os.path.join(
@@ -71,30 +73,27 @@ def plot_fft(
     )
     print("Saving figure to:", save_path)
     plt.savefig(save_path)
-    # plt.show()
+    plt.show()
     plt.close()
 
 
 def find_harmonic_peaks(
     fft_freqs,
     magnitude,
-    num_peaks=5,
+    num_peaks=3,
     peak_freq=None,
     threshold=0.001,
     rel_tol=0.05,
 ):
-    # ignore very weak bins
     mag = magnitude / np.max(magnitude)
 
     peaks = [peak_freq]
 
-    # search for harmonics
     for k in range(2, num_peaks + 1):
         target = k * peak_freq
         if target > fft_freqs[-1]:
             break
         tol = rel_tol * target
-        # find closest bin to the target
         idx = np.argmin(np.abs(fft_freqs - target))
         if abs(fft_freqs[idx] - target) <= tol and mag[idx] >= threshold:
             peaks.append(fft_freqs[idx])

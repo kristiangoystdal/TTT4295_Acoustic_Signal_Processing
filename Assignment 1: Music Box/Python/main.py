@@ -42,26 +42,30 @@ for segment in padded_segments:
     fft_freqs, magnitude = fft_segment(segment, framerate)
     fft_segments.append((fft_freqs, magnitude))
 
+# Calculate the freqeuency resolution
+freq_resolution = framerate / min_length
+print(f"Frequency resolution of FFT: {freq_resolution:.2f} Hz")
+
 # Use FFT to find peak frequencies
 peak_frequencies = find_peak_frequencies(fft_segments)
 print("Identified peak frequencies for each segment.")
 
 # Find harmonic peaks for each segment
-# harmonic_peaks = []
-# for i, (fft_freqs, magnitude) in enumerate(fft_segments):
-#     peak_freq = peak_frequencies[i]
-#     peaks = find_harmonic_peaks(fft_freqs, magnitude, peak_freq=peak_freq)
-#     harmonic_peaks.append(peaks)
+harmonic_peaks = []
+for i, (fft_freqs, magnitude) in enumerate(fft_segments):
+    peak_freq = peak_frequencies[i]
+    peaks = find_harmonic_peaks(fft_freqs, magnitude, peak_freq=peak_freq)
+    harmonic_peaks.append(peaks)
 
-#     # Plot FFT with harmonic peaks
-#     plot_fft(
-#         fft_freqs,
-#         magnitude,
-#         title=f"FFT Magnitude Spectrum for Note {i + 1}",
-#         harmonic_peaks=peaks,
-#         xlim=8000,
-#         index=i + 1,
-#     )
+    # Plot FFT with harmonic peaks
+    plot_fft(
+        fft_freqs,
+        magnitude,
+        title=f"FFT Magnitude Spectrum for Note {i + 1}",
+        harmonic_peaks=peaks,
+        xlim=8000,
+        index=i + 1,
+    )
 
 # Separate melody and bass frequencies
 melody_freq = []
@@ -87,17 +91,3 @@ save_notes_to_file(melody_notes_path, melody_notes)
 save_notes_to_file(bass_notes_path, bass_notes)
 print("Saved melody notes to 'melody_notes.txt'")
 print("Saved bass notes to 'bass_notes.txt'")
-
-# Plot all peak frequencies in order of segments
-plt.figure(figsize=(10, 4))
-plt.plot(range(1, len(peak_frequencies) + 1), peak_frequencies, marker="o")
-plt.title("Peak Frequencies of Segments")
-plt.xlabel("Segment Number")
-plt.ylabel("Peak Frequency (Hz)")
-plt.grid(True)
-plt.xticks(range(1, len(peak_frequencies) + 1))
-plt.tight_layout()
-# plt.show()
-
-# Play the identified peak frequencies as sine waves
-# play_frequencies(melody_freq, duration=0.5)

@@ -64,7 +64,6 @@ def plot_waveform(segment, framerate, title="Waveform of Segment", index=None):
     )
     print("Saving figure to:", save_path)
     plt.savefig(save_path)
-    # plt.show()
     plt.close()
 
 
