@@ -27,4 +27,4 @@
 *.bcf
 *.run.xml
 
-*/pycache/*
+*/__pycache__/*
