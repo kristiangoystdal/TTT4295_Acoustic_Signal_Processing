@@ -26,3 +26,5 @@
 *.ist
 *.bcf
 *.run.xml
+
+*/pycache/*
