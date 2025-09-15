@@ -1,9 +1,8 @@
 \chapter{Theory}
 
-
 \section{FFT} 
 
-The Fast Fourier Transform (FFT) is an algorithm that can be used compute the Discrete Fourier Transform (DFT) of a time signal. The DFT converts a sequence of complex numbers in the time domain into another sequence of complex numbers in the frequency domain. 
+The Fast Fourier Transform (FFT) is an algorithm that can be used to compute the Discrete Fourier Transform (DFT) of a time signal. The DFT converts a sequence of complex numbers in the time domain into another sequence of complex numbers in the frequency domain. 
 
 To increase the efficiency of the FFT, zero-padding can be used to increase the length of a signal by appending zeros to its end. This will improve the frequency resolution of the FFT, as the frequency bins will be more closely spaced without changing the actual frequency content of the signal. 
 
@@ -12,7 +11,7 @@ The frequency resolution \( \Delta f \) of the FFT is given by:
 \Delta f = \frac{f_s}{N}
 \label{eq:freq_resolution}
 \end{equation}
-where \( f_s \) is the sampling frequency and \( N \) is the number of points in the FFT (including zero-padding). By increasing \( N \) through zero-padding, \( \Delta f \) decreases, allowing for finer resolution in the frequency domain. 
+where \( f_s \) is the sampling frequency and \( N \) is the number of points in the FFT (including zero-padding). By increasing \( N \) through zero-padding, \( \Delta f \) decreases, allowing for finer resolution in the frequency domain \cite{Svensson2025}. 
 
 
 \section{Note Frequency Calculation}
@@ -22,7 +21,7 @@ The frequency of a musical note can be calculated using the formula:
 f = f_0 \cdot 2^{\frac{n - n_0}{12}}
 \label{eq:note_freq}
 \end{equation}
-where \( f \) is the frequency of the note, \( f_0 \) is the reference frequency (440 Hz for A4), \( n \) is the number of semitones away from the reference note, and \( n_0 \) is the semitone index of the reference note (A4=9).
+where \( f \) is the frequency of the note, \( f_0 \) is the reference frequency (440 Hz for A4), \( n \) is the number of semitones away from the reference note, and \( n_0 \) is the semitone index of the reference note (A4=9) \cite{Svensson2025}.
 
 
 \section{Musical Notes and Frequencies}
@@ -32,4 +31,4 @@ Deviation in cents can be calculated using the formula:
 \text{Cents} = 1200 \cdot \log_2\left(\frac{f_{\text{actual}}}{f_{\text{ideal}}}\right)
 \label{eq:deviation_cents}
 \end{equation}
-where \( f_{\text{actual}} \) is the frequency of the detected peak, and \( f_{\text{ideal}} \) is the ideal frequency of the corresponding note. Deviation in cents provides a measure of how much a note is out of tune relative to the ideal frequency, where 100 cents is equal to one semitone.
+where \( f_{\text{actual}} \) is the frequency of the detected peak, and \( f_{\text{ideal}} \) is the ideal frequency of the corresponding note. Deviation in cents provides a measure of how much a note is out of tune relative to the ideal frequency, where 100 cents is equal to one semitone \cite{Svensson2025}.

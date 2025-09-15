@@ -8,11 +8,11 @@ When playing the music box, we made sure that each note from the music box was p
 
 \section{Post-processing}
 
-To process the recording, Python was used with the libraries NumPy, Matplotlib and SoundDevice. The recording was loaded into Python using the SoundDevice library, and then split into individual notes by manually selecting the start and end points of each note in the waveform. The starting point of a segment was chosen to be just before the note started, and the end point was chosen to be the startpoint of the next note. This was to ensure that the full note was captured and that it had decayed fully before the next note started. This was the starting length of each segment for the FFT, before zero-padding was applied. 
+To process the recording, Python was used with the libraries NumPy, Matplotlib and SoundDevice. The recording was loaded into Python using the SoundDevice library, and then split into individual notes by manually selecting the start and end points of each note in the waveform. The starting point of a segment was chosen to be just before the note started, and the end point was chosen to be the startpoint of the next note. This was to ensure that the full note was captured and that it had decayed fully before the next note started. This was the starting length of each segment for the FFT, before zero-padding was applied.
 
 \subsection{FFT}
 
-To analyze the frequency content of each note, Fast Fourier Transform (FFT) was used. The FFT was computed using the NumPy library, which provides an efficient implementation of the algorithm.
+To analyze the frequency content of each note, Fast Fourier Transform (FFT) was used. The FFT was computed using the NumPy library, which provides an efficient implementation of the algorithm \cite{NumPyFFT}.
 
 To ensure that the FFT has enough frequency resolution, the length of each note segment was adjusted to be a power of two. This was achieved by zero-padding, which means finding the next power of two greater than the longest note segment, and padding the shorter segments with zeros to match this length. 
 
