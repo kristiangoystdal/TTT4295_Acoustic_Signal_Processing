@@ -80,7 +80,7 @@ def plot_fft(
 def find_harmonic_peaks(
     fft_freqs,
     magnitude,
-    num_peaks=3,
+    num_peaks=4,
     peak_freq=None,
     threshold=0.001,
     rel_tol=0.05,
