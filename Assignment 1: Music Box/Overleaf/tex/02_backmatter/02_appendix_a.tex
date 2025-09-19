@@ -45,7 +45,7 @@ for segment in padded_segments:
     fft_freqs, magnitude = fft_segment(segment, framerate)
     fft_segments.append((fft_freqs, magnitude))
 
-# Calculate the freqeuency resolution
+# Calculate the frequency resolution
 freq_resolution = framerate / min_length
 print(f"Frequency resolution of FFT: {freq_resolution:.2f} Hz")
 
