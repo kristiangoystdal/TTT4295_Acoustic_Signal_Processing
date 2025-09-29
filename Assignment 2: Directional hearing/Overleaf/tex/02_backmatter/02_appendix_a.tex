@@ -1,0 +1,342 @@
+\chapter{Python Source Code}
+
+\begin{lstlisting}[language=Python, caption={main.py}, label={lst:main}]
+import numpy as np
+import sounddevice as sd
+import matplotlib.pyplot as plt
+import math
+
+from time_splits import time_splits
+from audio import *
+from helper_functions import *
+from fft import *
+import os
+
+
+WAV_FILE = os.path.join(os.path.dirname(__file__), "Pink_Panther_Music_Box.wav")
+
+# Read WAV file
+audio, framerate = read_wav_file(WAV_FILE)
+print(f"Loaded '{WAV_FILE}' with {len(audio)} samples at {framerate} Hz")
+
+# Split into segments
+segments = split_into_segments(audio, framerate)
+print(f"Split audio into {len(segments)} segments based on time_splits.")
+
+# Plot each segment's waveform
+for i, segment in enumerate(segments):
+    plot_waveform(segment, framerate, title=f"Waveform of Segment {i + 1}", index=i + 1)
+
+# Print the length of the longest segment
+max_segment_length = max(len(segment) for segment in segments)
+print(f"Longest segment length: {max_segment_length} samples")
+
+# Add zero-padding to each segment
+min_length = 2 ** int(np.ceil(np.log2(max_segment_length)))
+print(f"Zero-padding segments to length: {min_length} samples")
+padded_segments = []
+for i, segment in enumerate(segments):
+    padded_segment = add_zero_padding(segment, min_length)
+    padded_segments.append(padded_segment)
+
+# Compute FFT for each padded segment
+fft_segments = []
+for segment in padded_segments:
+    fft_freqs, magnitude = fft_segment(segment, framerate)
+    fft_segments.append((fft_freqs, magnitude))
+
+# Calculate the frequency resolution
+freq_resolution = framerate / min_length
+print(f"Frequency resolution of FFT: {freq_resolution:.2f} Hz")
+
+# Use FFT to find peak frequencies
+peak_frequencies = find_peak_frequencies(fft_segments)
+print("Identified peak frequencies for each segment.")
+
+# Find harmonic peaks for each segment
+harmonic_peaks = []
+for i, (fft_freqs, magnitude) in enumerate(fft_segments):
+    peak_freq = peak_frequencies[i]
+    peaks = find_harmonic_peaks(fft_freqs, magnitude, peak_freq=peak_freq)
+    harmonic_peaks.append(peaks)
+
+    # Plot FFT with harmonic peaks
+    plot_fft(
+        fft_freqs,
+        magnitude,
+        title=f"FFT Magnitude Spectrum for Note {i + 1}",
+        harmonic_peaks=peaks,
+        xlim=8000,
+        index=i + 1,
+    )
+
+# Separate melody and bass frequencies
+melody_freq = []
+melody_notes = []
+bass_freq = []
+bass_notes = []
+
+for i, freq in enumerate(peak_frequencies):
+    note, octave, ideal_freq, deviation_cents = freq_to_note(freq)
+
+    if freq >= 261.63:
+        melody_freq.append(freq)
+        melody_notes.append((i, note, octave, freq, ideal_freq, deviation_cents))
+    else:
+        bass_freq.append(freq)
+        bass_notes.append((i, note, octave, freq, ideal_freq, deviation_cents))
+
+
+# Save melody and bass notes to text files
+melody_notes_path = get_saving_path("text", "melody_notes.txt")
+bass_notes_path = get_saving_path("text", "bass_notes.txt")
+save_notes_to_file(melody_notes_path, melody_notes)
+save_notes_to_file(bass_notes_path, bass_notes)
+print("Saved melody notes to 'melody_notes.txt'")
+print("Saved bass notes to 'bass_notes.txt'")
+
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python, caption={fft.py}, label={lst:fft}]
+
+  import numpy as np
+import os
+import matplotlib.pyplot as plt
+
+
+def fft_segment(signal, framerate):
+    n = len(signal)
+    fft_size = 2 ** int(np.ceil(np.log2(n)))
+    fft_result = np.fft.rfft(signal, n=fft_size)
+    fft_freqs = np.fft.rfftfreq(fft_size, d=1 / framerate)
+    magnitude = np.abs(fft_result)
+
+    return fft_freqs, magnitude
+
+
+def find_peak_frequencies(fft_segments):
+    peak_frequencies = []
+    for fft_freqs, magnitude in fft_segments:
+        peak_index = np.argmax(magnitude)
+        peak_frequency = fft_freqs[peak_index]
+        peak_frequencies.append(peak_frequency)
+
+    return peak_frequencies
+
+
+def add_zero_padding(segment, target_length):
+    current_length = len(segment)
+    if current_length >= target_length:
+        return segment
+    padding = np.zeros(target_length - current_length, dtype=segment.dtype)
+    return np.concatenate((segment, padding))
+
+
+def plot_fft(
+    fft_freqs,
+    magnitude,
+    title="FFT Magnitude Spectrum",
+    harmonic_peaks=None,
+    xlim=8000,
+    index=None,
+):
+    # Plot the FFT magnitude spectrum with the highest peak as 0 dB
+    magnitude = magnitude / np.max(magnitude)
+
+    plt.figure(figsize=(10, 4))
+    plt.plot(fft_freqs, magnitude)
+    plt.yscale("log")
+    if harmonic_peaks is not None:
+        for peak in harmonic_peaks:
+            if peak < xlim:
+                plt.axvline(
+                    x=peak, color="r", linestyle="--", label=f"Peak: {peak:.2f} Hz"
+                )
+        if index == 1:
+            plt.axvline(x=1645, color="g", linestyle="--", label=f"Peak: 1645 Hz")
+        plt.legend(loc="upper right")
+
+    plt.xlabel("Frequency (Hz)")
+    plt.ylabel("Magnitude (Normalized)")
+    plt.xlim(0, xlim)
+    plt.ylim(1e-6, 1.2)
+    plt.grid(True)
+    plt.tight_layout()
+
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    script_dir = os.path.dirname(script_dir)
+    save_path = os.path.join(
+        script_dir,
+        "Overleaf",
+        "data",
+        "fft_spectrums",
+        "fft_spectrum_segment_{}.png".format(index if index is not None else "unknown"),
+    )
+    print("Saving figure to:", save_path)
+    plt.savefig(save_path)
+    plt.close()
+
+
+def find_harmonic_peaks(
+    fft_freqs,
+    magnitude,
+    num_peaks=4,
+    peak_freq=None,
+    threshold=0.001,
+    rel_tol=0.05,
+):
+    mag = magnitude / np.max(magnitude)
+
+    peaks = [peak_freq]
+
+    for k in range(2, num_peaks + 1):
+        target = k * peak_freq
+        if target > fft_freqs[-1]:
+            break
+        tol = rel_tol * target
+        idx = np.argmin(np.abs(fft_freqs - target))
+        if abs(fft_freqs[idx] - target) <= tol and mag[idx] >= threshold:
+            peaks.append(fft_freqs[idx])
+
+    return peaks
+
+    \end{lstlisting}
+
+\begin{lstlisting}[language=Python, caption={audio.py}, label={lst:audio}]
+import sounddevice as sd
+import numpy as np
+from time_splits import time_splits
+
+
+def read_wav_file(wav_file):
+    import numpy as np
+    import wave
+
+    # Load Wav file
+    with wave.open(wav_file, "rb") as wf:
+        sampwidth_bytes = wf.getsampwidth()
+        framerate = wf.getframerate()
+        n_frames = wf.getnframes()
+        audio_bytes = wf.readframes(n_frames)
+
+    # Decode to numpy
+    if sampwidth_bytes == 2:
+        audio = np.frombuffer(audio_bytes, dtype=np.int16)
+    elif sampwidth_bytes == 1:
+        u8 = np.frombuffer(audio_bytes, dtype=np.uint8).astype(np.int16)
+        audio = ((u8 - 128) << 8).astype(np.int16)
+    else:
+        raise ValueError(f"Unsupported sample width: {sampwidth_bytes*8} bits")
+
+    return audio, framerate
+
+
+def play_segment(segment, framerate):
+    if segment.size != 0:
+        sd.play(segment, samplerate=framerate, blocking=True)
+
+
+def play_segments(segments, framerate):
+    for i, segment in enumerate(segments):
+        seg_start, seg_end = time_splits[i]
+        print(f"Playing segment {i + 1}/{len(segments)}: {seg_start}s to {seg_end}s")
+        play_segment(segment, framerate)
+        if i < len(segments) - 1:
+            input("Press Enter to play the next segment...")
+
+    print("All segments played!")
+
+
+def play_frequencies(peak_frequencies, duration=0.5):
+    sample_rate = 44100
+    for i, freq in enumerate(peak_frequencies):
+        t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)
+        sine_wave = 0.1 * np.sin(2 * np.pi * freq * t)
+        sd.play(sine_wave, samplerate=sample_rate, blocking=True)
+
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python, caption={\texttt{helper\_functions.py}}, label={lst:helper_functions}]
+import sounddevice as sd
+import numpy as np
+import math
+import os
+import matplotlib.pyplot as plt
+from time_splits import time_splits
+
+
+def split_into_segments(audio, framerate):
+    segments = []
+    for start, end in time_splits:
+        start_idx = max(0, int(start * framerate))
+        end_idx = min(len(audio), int(end * framerate))
+        if end_idx > start_idx:
+            segments.append(audio[start_idx:end_idx])
+        else:
+            segments.append(np.array([], dtype=audio.dtype))
+    return segments
+
+
+# Calculate the note based on the peak frequency
+def freq_to_note(freq):
+    note_names = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
+
+    n = round(12 * math.log2(freq / 440.0) + 9)  # semitone index, A4=440 -> n=9
+    note_index = n % 12
+    octave = n // 12 + 4
+
+    ideal_freq = 440.0 * 2 ** ((n - 9) / 12)
+
+    deviation_cents = 1200 * math.log2(freq / ideal_freq)
+
+    return note_names[note_index], octave, ideal_freq, deviation_cents
+
+
+# Save notes to a text file
+def save_notes_to_file(filename, notes):
+    with open(filename, "w") as f:
+        for index, note, octave, freq, ideal_freq, deviation_cents in notes:
+            f.write(
+                f"Segment {index + 1}: {note}{octave} - {freq:.2f} Hz (Ideal: {ideal_freq:.2f} Hz, Deviation: {deviation_cents:.2f} cents)\n"
+            )
+
+
+def plot_waveform(segment, framerate, title="Waveform of Segment", index=None):
+
+    times = np.arange(len(segment)) / framerate
+
+    plt.figure(figsize=(10, 4))
+    plt.plot(times, segment)
+    plt.xlabel("Time (s)")
+    plt.ylabel("Amplitude")
+    plt.xlim(0, times[-1])
+    plt.grid()
+
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    script_dir = os.path.dirname(script_dir)
+    save_path = os.path.join(
+        script_dir,
+        "Overleaf",
+        "data",
+        "time_plots",
+        "time_plot_segment_{}.png".format(index if index is not None else "unknown"),
+    )
+    print("Saving figure to:", save_path)
+    plt.savefig(save_path)
+    plt.close()
+
+
+def get_saving_path(folder, filename, index=None):
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    script_dir = os.path.dirname(script_dir)
+    save_path = os.path.join(
+        script_dir,
+        "Overleaf",
+        "data",
+        folder,
+        "{}{}".format(filename, index if index is not None else ""),
+    )
+
+    return save_path
+
+    \end{lstlisting}
