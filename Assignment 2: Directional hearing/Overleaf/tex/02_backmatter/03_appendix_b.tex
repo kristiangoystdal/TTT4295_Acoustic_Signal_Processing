@@ -1,3 +1,33 @@
-\chapter{Appendix}
-If you have data from different measurements, you might want to use multiple appendices.
+\chapter{Derivation of the Bilinear Transform}
+\label{app:bilinear}
+
+Starting from the continuous-time transfer function:
+\begin{equation}
+  H(s) = \frac{\alpha s + \beta}{s + \beta},
+\end{equation}
+the bilinear transform substitution
+\begin{equation}
+  s = \frac{2}{T} \frac{z - 1}{z + 1}
+\end{equation}
+is applied to obtain a discrete-time transfer function:
+\begin{align}
+  H(z) &= \frac{\alpha \cdot \frac{2}{T} \cdot \frac{z-1}{z+1} + \beta}{\frac{2}{T} \cdot \frac{z-1}{z+1} + \beta} \nonumber \\
+  &= \frac{\alpha \cdot 2 \cdot \frac{z-1}{z+1} + \beta \cdot T}{2 \cdot \frac{z-1}{z+1} + \beta \cdot T} \nonumber \\
+  &= \frac{\alpha \cdot 2 \cdot (z-1) + \beta \cdot T \cdot (z+1)}{2 \cdot (z-1) + \beta \cdot T \cdot (z+1)} \nonumber\\
+  &= \frac{2\alpha z - 2\alpha + \beta T z + \beta T}{2z - 2 + \beta T z + \beta T} \nonumber\\
+  &= \frac{(2 \alpha + \beta T) z + (\beta T - 2 \alpha)}{(2 + \beta T) z + (\beta T - 2)}  \nonumber\\
+  &= \frac{b_0 z + b_1}{a_0 z + a_1} \nonumber\\
+  &= \frac{b_0 + b_1 z^{-1}}{a_0 + a_1 z^{-1}} \nonumber\\
+  &= \frac{b_0/a_0 + (b_1/a_0) z^{-1}}{1 + (a_1/a_0) z^{-1}} \nonumber\\
+  &= \frac{B_0 + B_1 z^{-1}}{1 + A_1 z^{-1}}
+\end{align}
+
+Here,
+\begin{align}
+  B_0 &= \frac{2\alpha + \beta T}{2 + \beta T}, &
+  B_1 &= \frac{\beta T - 2\alpha}{2 + \beta T}, &
+  A_1 &= \frac{\beta T - 2}{2 + \beta T}.
+\end{align}
+
+
 
