@@ -1,93 +1,99 @@
 import numpy as np
 import sounddevice as sd
-import matplotlib.pyplot as plt
-import math
+from scipy.signal import lfilter
 
-from time_splits import time_splits
-from audio import *
-from helper_functions import *
-from fft import *
-import os
+from plot import (
+    plot_itd,
+    plot_hrtf_response,
+    plot_hrtfiir_response,
+    plot_combined_hrir,
+)
+from hrir import hrir1
+from hrtf import hrtf1, hrtfiir
 
 
-WAV_FILE = os.path.join(os.path.dirname(__file__), "Pink_Panther_Music_Box.wav")
+# Constants
+f_s = 44100  # Hz
+c = 343  # m/s
+head_radius = 0.09  # meters
 
-# Read WAV file
-audio, framerate = read_wav_file(WAV_FILE)
-print(f"Loaded '{WAV_FILE}' with {len(audio)} samples at {framerate} Hz")
 
-# Split into segments
-segments = split_into_segments(audio, framerate)
-print(f"Split audio into {len(segments)} segments based on time_splits.")
+# Task 1-4: HRTF and HRIR calculations
+for angle in [-90, -60, -30, 0, 30, 60, 90]:
+    print(f"Calculating for angle: {angle} degrees")
 
-# Plot each segment's waveform
-for i, segment in enumerate(segments):
-    plot_waveform(segment, framerate, title=f"Waveform of Segment {i + 1}", index=i + 1)
+    # Task 1: HRIR
+    hrir_left, hrir_right = hrir1(angle, head_radius, f_s, c)
+    plot_itd(hrir_left, hrir_right, angle)
 
-# Print the length of the longest segment
-max_segment_length = max(len(segment) for segment in segments)
-print(f"Longest segment length: {max_segment_length} samples")
+    # Task 2: HRTF
+    f_vec, H_L, H_R = hrtf1(angle, head_radius, f_s, c)
+    plot_hrtf_response(f_vec, H_L, H_R, angle)
 
-# Add zero-padding to each segment
-min_length = 2 ** int(np.ceil(np.log2(max_segment_length)))
-print(f"Zero-padding segments to length: {min_length} samples")
-padded_segments = []
-for i, segment in enumerate(segments):
-    padded_segment = add_zero_padding(segment, min_length)
-    padded_segments.append(padded_segment)
-
-# Compute FFT for each padded segment
-fft_segments = []
-for segment in padded_segments:
-    fft_freqs, magnitude = fft_segment(segment, framerate)
-    fft_segments.append((fft_freqs, magnitude))
-
-# Calculate the freqeuency resolution
-freq_resolution = framerate / min_length
-print(f"Frequency resolution of FFT: {freq_resolution:.2f} Hz")
-
-# Use FFT to find peak frequencies
-peak_frequencies = find_peak_frequencies(fft_segments)
-print("Identified peak frequencies for each segment.")
-
-# Find harmonic peaks for each segment
-harmonic_peaks = []
-for i, (fft_freqs, magnitude) in enumerate(fft_segments):
-    peak_freq = peak_frequencies[i]
-    peaks = find_harmonic_peaks(fft_freqs, magnitude, peak_freq=peak_freq)
-    harmonic_peaks.append(peaks)
-
-    # Plot FFT with harmonic peaks
-    plot_fft(
-        fft_freqs,
-        magnitude,
-        title=f"FFT Magnitude Spectrum for Note {i + 1}",
-        harmonic_peaks=peaks,
-        xlim=8000,
-        index=i + 1,
+    # Task 3: HRTF IIR
+    hrtfiir_a, hrtfiir_left_0, hrtfiir_left_1, hrtfiir_right_0, hrtfiir_right_1 = (
+        hrtfiir(angle, head_radius, f_s, c)
+    )
+    plot_hrtfiir_response(
+        hrtfiir_a,
+        hrtfiir_left_0,
+        hrtfiir_left_1,
+        hrtfiir_right_0,
+        hrtfiir_right_1,
+        f_s,
+        angle,
     )
 
-# Separate melody and bass frequencies
-melody_freq = []
-melody_notes = []
-bass_freq = []
-bass_notes = []
+    # Task 4: Combined HRIR and HRTF IIR
 
-for i, freq in enumerate(peak_frequencies):
-    note, octave, ideal_freq, deviation_cents = freq_to_note(freq)
+    # combined_left = np.convolve(hrir_left, [hrtfiir_left_0, hrtfiir_left_1], "full")
+    # combined_right = np.convolve(hrir_right, [hrtfiir_right_0, hrtfiir_right_1], "full")
 
-    if freq >= 261.63:
-        melody_freq.append(freq)
-        melody_notes.append((i, note, octave, freq, ideal_freq, deviation_cents))
+    combined_left = lfilter([hrtfiir_left_0, hrtfiir_left_1], [1, hrtfiir_a], hrir_left)
+    combined_right = lfilter(
+        [hrtfiir_right_0, hrtfiir_right_1], [1, hrtfiir_a], hrir_right
+    )
+
+    plot_combined_hrir(combined_left, combined_right, angle)
+
+
+# Generate pink noise
+def pink_noise(N):
+    n_rows = 16
+    n_cols = N
+    array = np.random.randn(n_rows, n_cols)
+    array = np.cumsum(array, axis=1)
+    pink = np.sum(array, axis=0)
+    pink /= np.max(np.abs(pink))
+    return pink
+
+
+# Task 5: Sound playback
+step = 30
+full_stereo_signal = None
+for angle in range(-90, 91, step):
+    print(f"Playing sound at {angle} degrees")
+    hrir_left, hrir_right = hrir1(angle, head_radius, f_s, c)
+
+    hrtfiir_a, hrtfiir_left_0, hrtfiir_left_1, hrtfiir_right_0, hrtfiir_right_1 = (
+        hrtfiir(angle, head_radius, f_s, c)
+    )
+
+    combined_left = np.convolve(hrir_left, [hrtfiir_left_0, hrtfiir_left_1], "full")
+    combined_right = np.convolve(hrir_right, [hrtfiir_right_0, hrtfiir_right_1], "full")
+
+    # Combine all the segments and play sound
+    duration = 1  # seconds
+    t = np.linspace(0, duration, int(f_s * duration), endpoint=False)
+
+    mono_signal = 0.5 * pink_noise(len(t))
+    stereo_signal = np.zeros((len(mono_signal), 2))
+    stereo_signal[:, 0] = np.convolve(mono_signal, combined_left, "same")
+    stereo_signal[:, 1] = np.convolve(mono_signal, combined_right, "same")
+    if full_stereo_signal is None:
+        full_stereo_signal = stereo_signal
     else:
-        bass_freq.append(freq)
-        bass_notes.append((i, note, octave, freq, ideal_freq, deviation_cents))
+        full_stereo_signal = np.vstack((full_stereo_signal, stereo_signal))
 
-
-# Save melody and bass notes to text files
-melody_notes_path = get_saving_path("text", "melody_notes.txt")
-bass_notes_path = get_saving_path("text", "bass_notes.txt")
-save_notes_to_file(melody_notes_path, melody_notes)
-save_notes_to_file(bass_notes_path, bass_notes)
-print("Saved melody notes to 'melody_notes.txt'")
-print("Saved bass notes to 'bass_notes.txt'")
+sd.play(full_stereo_signal, f_s)
+sd.wait()
