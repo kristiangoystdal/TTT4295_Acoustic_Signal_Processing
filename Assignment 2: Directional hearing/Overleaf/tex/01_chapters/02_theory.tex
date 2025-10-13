@@ -1,34 +1,53 @@
 \chapter{Theory}
 
-\section{FFT} 
+\section{Head-Related Impulse Response}
+\label{sec:hrir}
 
-The Fast Fourier Transform (FFT) is an algorithm that can be used to compute the Discrete Fourier Transform (DFT) of a time signal. The DFT converts a sequence of complex numbers in the time domain into another sequence of complex numbers in the frequency domain. 
+The Head-Related Impulse Response (HRIR) characterizes how an ear receives a sound from a point in space. It is a function of the direction of the sound source relative to the listener's head and ears. The HRIR captures the effects of the head, torso, and outer ear (pinna) on the sound wave as it travels to the ear canal. This means that the HRIR varies for each person due to differences in head and ear shape. To model the HRIR, we can use a simplified model of the head as a rigid sphere. This model allows us to calculate the time delay between the two ears based on the angle of incidence of the sound wave. 
 
-To increase the resolution of the FFT, zero-padding can be used to increase the length of a signal by appending zeros to its end. This will improve the frequency resolution of the FFT, as the frequency bins will be more closely spaced without changing the actual frequency content of the signal. 
-
-The frequency resolution \( \Delta f \) of the FFT is given by:
+This is called the interaural time difference (ITD). The Woodworth formula is used for calculating this delay at a given angle \( \theta \) and is given by:
 \begin{equation}
-\Delta f = \frac{f_s}{N}
-\label{eq:freq_resolution}
+  \Delta\tau = \frac{a}{c} (\theta + \sin(\theta))
+  \label{eq:woodworth}
 \end{equation}
-where \( f_s \) is the sampling frequency and \( N \) is the number of points in the FFT (including zero-padding). By increasing \( N \) through zero-padding, \( \Delta f \) decreases, allowing for finer resolution in the frequency domain \cite{Svensson2025}. 
+where \( a \) is the radius of the head, \( c \) is the speed of sound, and \( \theta \) is the angle of incidence of the sound wave relative to the forward direction of the head. This returns the time delay \( \Delta\tau \) in seconds, where the sound reaches the ear closer to the source first at \( t = 0 \) and the other ear at \( t = \Delta\tau \).
 
+\section{Head-Related Transfer Function}
+\label{sec:hrtf}
 
-\section{Note Frequency Calculation}
-
-The frequency of a musical note can be calculated using the formula:
+The formula for the Head-Related Transfer Function (HRTF) for a rigid sphere model is given by:
 \begin{equation}
-f = f_0 \cdot 2^{\frac{n - n_0}{12}}
-\label{eq:note_freq}
+  H_{L/R}(\omega) = \frac{a_{L/R} \cdot j\omega + \beta}{j\omega + \beta} 
+  \label{eq:hrtf}
 \end{equation}
-where \( f \) is the frequency of the note, \( f_0 \) is the reference frequency (440 Hz for A4), \( n \) is the number of semitones away from the reference note, and \( n_0 \) is the semitone index of the reference note (A4=9) \cite{Svensson2025}.
+where \( a_{L} = 1 - \sin(\theta) \) for the left ear and \( a_{R} = 1 + \sin(\theta) \) for the right ear, \( \beta = \frac{2c}{a} \), \( c \) is the speed of sound, \( a \) is the radius of the head, and \( \theta \) is the angle of incidence of the sound wave relative to the forward direction of the head. The HRTF describes how the sound wave is filtered by the head and ears before reaching the ear canal. The HRTF can be used to simulate how a sound would be perceived by a listener from a specific direction.
 
 
-\section{Musical Notes and Frequencies}
+\section{Bilinear Transform}
 
-Deviation in cents can be calculated using the formula:
+To implement the analog HRTF model digitally, the bilinear transform is used to convert the continuous-time transfer function to a discrete-time transfer function. The analog HRTF can be expressed as a first-order low-pass filter:
 \begin{equation}
-\text{Cents} = 1200 \cdot \log_2\left(\frac{f_{\text{actual}}}{f_{\text{ideal}}}\right)
-\label{eq:deviation_cents}
+  H(s) = \frac{\alpha_{L/R} s + \beta}{s + \beta},
+  \label{eq:lowpass}
 \end{equation}
-where \( f_{\text{actual}} \) is the frequency of the detected peak, and \( f_{\text{ideal}} \) is the ideal frequency of the corresponding note. Deviation in cents provides a measure of how much a note is out of tune relative to the ideal frequency, where 100 cents is equal to one semitone \cite{Svensson2025}.
+where \( \alpha_L = 1 - \sin(\theta) \) and \( \alpha_R = 1 + \sin(\theta) \) are scaling factors
+for the left and right ears, respectively, and \( \beta = \frac{2c}{a} \).
+
+The bilinear transform is defined as:
+\begin{equation}
+  s = \frac{2}{T} \cdot \frac{z-1}{z+1},
+\end{equation}
+where \( T = 1/f_s \) is the sampling period.
+
+Applying this to the first-order analog transfer function in (\autoref{eq:lowpass}) yields a discrete-time filter on the form:
+\begin{equation}
+  H(z) = \frac{B_0 + B_1 z^{-1}}{1 + A_1 z^{-1}},
+\end{equation}
+with coefficients
+\begin{align}
+  B_0 &= \frac{2\alpha + \beta T}{2 + \beta T}, &
+  B_1 &= \frac{\beta T - 2\alpha}{2 + \beta T}, &
+  A_1 &= \frac{\beta T - 2}{2 + \beta T}.
+\end{align}
+
+A full derivation of this expression is included in \autoref{app:bilinear}.
