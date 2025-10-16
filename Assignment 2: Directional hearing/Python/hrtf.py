@@ -5,8 +5,8 @@ import math
 # TASK 2: HRTF model
 def hrtf1(angle, head_radius=0.09, f_s=44100, c=343, n_fft=512):
     theta = math.radians(angle)
-    alpha_L = 1 - math.sin(theta)
-    alpha_R = 1 + math.sin(theta)
+    alpha_L = 1 + math.sin(theta)
+    alpha_R = 1 - math.sin(theta)
     beta = 2 * c / head_radius
 
     f_vec = np.linspace(0, f_s / 2, n_fft // 2 + 1)
@@ -26,8 +26,8 @@ def hrtf1(angle, head_radius=0.09, f_s=44100, c=343, n_fft=512):
 def hrtfiir(angle, head_radius=0.09, f_s=44100, c=343):
     T = 1 / f_s
     theta = math.radians(angle)
-    alpha_L = 1 - math.sin(theta)
-    alpha_R = 1 + math.sin(theta)
+    alpha_L = 1 + math.sin(theta)
+    alpha_R = 1 - math.sin(theta)
     beta = 2 * c / head_radius
 
     # Common
