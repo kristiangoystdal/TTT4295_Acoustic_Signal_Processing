@@ -2,12 +2,7 @@ import numpy as np
 import sounddevice as sd
 from scipy.signal import lfilter
 
-from plot import (
-    plot_itd,
-    plot_hrtf_response,
-    plot_hrtfiir_response,
-    plot_combined_hrir,
-)
+from plot import *
 from hrir import hrir1
 from hrtf import hrtf1, hrtfiir
 
@@ -46,15 +41,34 @@ for angle in [-90, -60, -30, 0, 30, 60, 90]:
 
     # Task 4: Combined HRIR and HRTF IIR
 
-    # combined_left = np.convolve(hrir_left, [hrtfiir_left_0, hrtfiir_left_1], "full")
-    # combined_right = np.convolve(hrir_right, [hrtfiir_right_0, hrtfiir_right_1], "full")
+    signal_constant = np.ones(512)
 
-    combined_left = lfilter([hrtfiir_left_0, hrtfiir_left_1], [1, hrtfiir_a], hrir_left)
-    combined_right = lfilter(
-        [hrtfiir_right_0, hrtfiir_right_1], [1, hrtfiir_a], hrir_right
+    filtered_left = lfilter(
+        [hrtfiir_left_0, hrtfiir_left_1], [1, hrtfiir_a], signal_constant
+    )
+    filtered_right = lfilter(
+        [hrtfiir_right_0, hrtfiir_right_1], [1, hrtfiir_a], signal_constant
     )
 
-    plot_combined_hrir(combined_left, combined_right, angle)
+    combined_left = np.convolve(filtered_left, hrir_left, "full")
+    combined_right = np.convolve(filtered_right, hrir_right, "full")
+
+    peak = max(np.max(np.abs(combined_left)), np.max(np.abs(combined_right)))
+    combined_left /= peak
+    combined_right /= peak
+
+    plot_combined_hrir_time(combined_left, combined_right, angle)
+    plot_combined_hrir_freq(
+        hrir_left,
+        hrir_right,
+        hrtfiir_left_0,
+        hrtfiir_left_1,
+        hrtfiir_right_0,
+        hrtfiir_right_1,
+        hrtfiir_a,
+        f_s,
+        angle,
+    )
 
 
 # Generate pink noise
@@ -79,7 +93,7 @@ for angle in range(-90, 91, step):
         hrtfiir(angle, head_radius, f_s, c)
     )
 
-    combined_left = np.convolve(hrir_left, [hrtfiir_left_0, hrtfiir_left_1], "full")
+    delay_left = np.convolve(hrir_left, [hrtfiir_left_0, hrtfiir_left_1], "full")
     combined_right = np.convolve(hrir_right, [hrtfiir_right_0, hrtfiir_right_1], "full")
 
     # Combine all the segments and play sound
@@ -95,5 +109,87 @@ for angle in range(-90, 91, step):
     else:
         full_stereo_signal = np.vstack((full_stereo_signal, stereo_signal))
 
-sd.play(full_stereo_signal, f_s)
-sd.wait()
+# sd.play(full_stereo_signal, f_s)
+# sd.wait()
+
+
+# Plot 0, 30 and 90 degrees together
+(
+    hrir_left_list,
+    hrir_right_list,
+    hrtfiir_a_list,
+    hrtfiir_left_0_list,
+    hrtfiir_left_1_list,
+    hrtfiir_right_0_list,
+    hrtfiir_right_1_list,
+    combined_left_list,
+    combined_right_list,
+) = (
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+)
+angles = [-30, 0, 90]
+for angle in angles:
+    # Task 1
+    hrir_left, hrir_right = hrir1(angle, head_radius, f_s, c)
+    # Task 3
+    hrtfiir_a, hrtfiir_left_0, hrtfiir_left_1, hrtfiir_right_0, hrtfiir_right_1 = (
+        hrtfiir(angle, head_radius, f_s, c)
+    )
+    # Task 4
+    signal_constant = np.ones(512)
+
+    filtered_left = lfilter(
+        [hrtfiir_left_0, hrtfiir_left_1], [1, hrtfiir_a], signal_constant
+    )
+    filtered_right = lfilter(
+        [hrtfiir_right_0, hrtfiir_right_1], [1, hrtfiir_a], signal_constant
+    )
+
+    combined_left = np.convolve(filtered_left, hrir_left, "full")
+    combined_right = np.convolve(filtered_right, hrir_right, "full")
+
+    peak = max(np.max(np.abs(combined_left)), np.max(np.abs(combined_right)))
+    combined_left /= peak
+    combined_right /= peak
+
+    # Append to lists
+    hrir_left_list.append(hrir_left)
+    hrir_right_list.append(hrir_right)
+    hrtfiir_a_list.append(hrtfiir_a)
+    hrtfiir_left_0_list.append(hrtfiir_left_0)
+    hrtfiir_left_1_list.append(hrtfiir_left_1)
+    hrtfiir_right_0_list.append(hrtfiir_right_0)
+    hrtfiir_right_1_list.append(hrtfiir_right_1)
+    combined_left_list.append(combined_left)
+    combined_right_list.append(combined_right)
+
+plot_itd_multiple(hrir_left_list, hrir_right_list, angles)
+plot_hrtfiir_response_multiple(
+    hrtfiir_a_list,
+    hrtfiir_left_0_list,
+    hrtfiir_left_1_list,
+    hrtfiir_right_0_list,
+    hrtfiir_right_1_list,
+    f_s,
+    angles,
+)
+plot_combined_hrir_time_multiple(combined_left_list, combined_right_list, angles)
+plot_combined_hrir_freq_multiple(
+    hrir_left_list,
+    hrir_right_list,
+    hrtfiir_left_0_list,
+    hrtfiir_left_1_list,
+    hrtfiir_right_0_list,
+    hrtfiir_right_1_list,
+    hrtfiir_a_list,
+    f_s,
+    angles,
+)
