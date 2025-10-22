@@ -1,3 +1,6 @@
+# Author: Kristian Goystdal
+# Date: 22.10.2025
+
 import os
 import numpy as np
 import matplotlib.pyplot as plt
@@ -108,7 +111,7 @@ def plot_hrtf_response(f_vec, H_L, H_R, angle=90):
     plt.close()
 
 
-def plot_hrtf_response_multiple(f_vec, H_L_list, H_R_list, angles):
+def plot_hrtf_response_multiple(f_vec_list, H_L_list, H_R_list, angles):
     os.makedirs("Overleaf/data/figures/task_2", exist_ok=True)
 
     plt.figure(figsize=(10, 6), dpi=300)
@@ -116,14 +119,14 @@ def plot_hrtf_response_multiple(f_vec, H_L_list, H_R_list, angles):
     colors = ["b", "r", "g", "m", "c", "y", "k"]
     for i, angle in enumerate(angles):
         plt.semilogx(
-            f_vec,
+            f_vec_list[i],
             20 * np.log10(np.abs(H_L_list[i])),
             label=f"Left Ear {angle}°",
             color=colors[i % len(colors)],
             linestyle="-",
         )
         plt.semilogx(
-            f_vec,
+            f_vec_list[i],
             20 * np.log10(np.abs(H_R_list[i])),
             label=f"Right Ear {angle}°",
             color=colors[i % len(colors)],
@@ -135,7 +138,7 @@ def plot_hrtf_response_multiple(f_vec, H_L_list, H_R_list, angles):
     plt.ylabel("Magnitude [dB]")
     plt.grid(which="both", linestyle="--", linewidth=0.5)
     plt.legend()
-    plt.xlim(20, f_vec[-1])
+    plt.xlim(20, f_vec_list[0][-1])
     plt.ylim(-20, 20)
     plt.tight_layout()
     plt.savefig(

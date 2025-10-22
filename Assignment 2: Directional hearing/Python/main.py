@@ -1,3 +1,6 @@
+# Author: Kristian Goystdal
+# Date: 22.10.2025
+
 import numpy as np
 import sounddevice as sd
 from scipy.signal import lfilter
@@ -117,6 +120,9 @@ for angle in range(-90, 91, step):
 (
     hrir_left_list,
     hrir_right_list,
+    f_vec_list,
+    H_L_list,
+    H_R_list,
     hrtfiir_a_list,
     hrtfiir_left_0_list,
     hrtfiir_left_1_list,
@@ -134,11 +140,18 @@ for angle in range(-90, 91, step):
     [],
     [],
     [],
+    [],
+    [],
+    [],
 )
 angles = [-30, 0, 90]
 for angle in angles:
     # Task 1
     hrir_left, hrir_right = hrir1(angle, head_radius, f_s, c)
+
+    # Task 2
+    f_vec, H_L, H_R = hrtf1(angle, head_radius, f_s, c)
+
     # Task 3
     hrtfiir_a, hrtfiir_left_0, hrtfiir_left_1, hrtfiir_right_0, hrtfiir_right_1 = (
         hrtfiir(angle, head_radius, f_s, c)
@@ -163,6 +176,9 @@ for angle in angles:
     # Append to lists
     hrir_left_list.append(hrir_left)
     hrir_right_list.append(hrir_right)
+    f_vec_list.append(f_vec)
+    H_L_list.append(H_L)
+    H_R_list.append(H_R)
     hrtfiir_a_list.append(hrtfiir_a)
     hrtfiir_left_0_list.append(hrtfiir_left_0)
     hrtfiir_left_1_list.append(hrtfiir_left_1)
@@ -172,6 +188,7 @@ for angle in angles:
     combined_right_list.append(combined_right)
 
 plot_itd_multiple(hrir_left_list, hrir_right_list, angles)
+plot_hrtf_response_multiple(f_vec_list, H_L_list, H_R_list, angles)
 plot_hrtfiir_response_multiple(
     hrtfiir_a_list,
     hrtfiir_left_0_list,

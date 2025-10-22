@@ -1,3 +1,6 @@
+# Author: Kristian Goystdal
+# Date: 22.10.2025
+
 import numpy as np
 import math
 
