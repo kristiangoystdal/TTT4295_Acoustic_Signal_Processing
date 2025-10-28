@@ -1,2 +1,26 @@
 \chapter{Discussions}
 
+In this chapter, the results obtained from the implementation of the HRIR and HRTF models are discussed in detail. The performance of the models is evaluated based on their ability to simulate directional hearing effects, and the implications of the findings are explored. 
+
+\section{Task 1: HRIR Model}
+The Head-Related Impulse Response (HRIR) model effectively captures the interaural time difference (ITD) based on the angle of incidence. Although this is a simplified model, it serves as a foundational step towards more complex auditory simulations.
+
+The three different angles were chosen to represent the possible scenarios of sound incidence: directly in front (\(0^\circ\)), directly from a side (\(90^\circ\)), and an intermediate angle from the opposite side (\(-30^\circ\)). Also here we exclude the back angles for simplicity, since they would just be a mirrored version of the front angles in this model.
+
+The results demonstrate that the HRIR varies depending on the angle, with clear differences in the timing of impulses received by each ear. This temporal disparity is crucial for sound localization, and the model successfully illustrates this phenomenon. 
+
+\section{Task 2: HRTF Frequency Response}
+For the Head-Related Transfer Function (HRTF) frequency response, the results indicate that the model accurately reflects the directional filtering effects of the head. The frequency responses for different angles show significant variations, where higher frequencies are more affected by the angle of incidence. This behavior aligns with theoretical expectations, since high-frequency components are more strongly affected by diffraction and shadowing around the head. 
+
+\section{Task 3: HRTF IIR Filter}
+The IIR filter coefficients derived from the bilinear transform provide a practical means to implement the HRTF in a discrete-time system. The coefficients obtained for various angles demonstrate the filter's ability to approximate the desired frequency response. The impulse responses for different angles show that the ear closer to the sound source receives a stronger signal, particularly at lower frequencies. Both ears, however, exhibit a weakening in the higher frequency range, which is characteristic of the HRTF effect, with the source ear decreasing more than the shadowing ear.
+
+\section{Task 4: Combined Model}
+The combined HRIR model, which integrates the ITD with the HRTF IIR filter, offers a better look at how these two aspects work together to create a more realistic simulation of directional hearing. As seen in \autoref{fig:combined_hrir_time}, this is consistent with the expectation that the ear closer to the sound source would receive a stronger signal, while the opposite ear would experience a delayed and attenuated response.
+
+
+\section{Task 5: Sound Demonstration}
+The sound demonstration using pink noise effectively showcases the impact of the combined HRIR and HRTF IIR model on audio perception. The processed audio signals for different angles exhibit noticeable differences in spatial characteristics, allowing listeners to perceive the directionality of the sound source. 
+
+\section{Limitations and Future Work}
+While the models implemented in this assignment provide a solid foundation for simulating directional hearing, there are several limitations to consider. The HRIR model is highly simplified and does not account for complex head and ear geometries, which can significantly influence sound localization. Future work could involve incorporating more detailed anatomical models or using measured HRIR data for improved accuracy.

@@ -1,3 +1,11 @@
 \chapter*{Summary}
 
+This report presents the implementation and analysis of simplified models for directional hearing based on the Head-Related Impulse Response (HRIR) and Head-Related Transfer Function (HRTF). 
 
+The HRIR model captures the interaural time differences (ITD) that happens due to the position of the sound source relative to the listener's head. The HRTF model shows the frequency-dependent filtering effects caused by the head, which change how sounds from different directions are perceived.
+
+The combined HRIR and HRTF models were used to simulate the perception of sound from different directions, with a demonstration using pink noise to illustrate the spatial effects. 
+
+The models were implemented using Python, using libraries such as NumPy and SciPy for numerical computations and signal processing. 
+
+The findings in this report highlight the importance of these models for applications in audio signal processing, virtual reality, and spatial audio rendering. Future work could involve changing the models to use more complex head and ear geometries. 

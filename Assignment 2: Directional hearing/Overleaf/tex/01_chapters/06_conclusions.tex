@@ -1,2 +1,6 @@
 \chapter{Conclusions}
+\label{ch:conclusions}
 
+In this report, we have successfully implemented and evaluated Head-Related Impulse Response (HRIR) and Head-Related Transfer Function (HRTF) models based on a simple rigid sphere approximation. The models effectively simulate directional hearing by incorporating interaural time differences (ITD) and frequency-dependent filtering effects caused by the head. 
+
+The HRIR model captures the essential timing differences between the ears, while the HRTF model accurately reflects the directional filtering effects of the head. The derived IIR filter coefficients provide a practical means to implement the HRTF in a discrete-time system. The combined HRIR model, which integrates the ITD with the HRTF IIR filter, offers a more realistic simulation of how sound is perceived from different directions. This is shown in the sound demonstration using pink noise, which effectively showcases the impact of the combined model on audio perception, allowing listeners to perceive the directionality of the sound source.

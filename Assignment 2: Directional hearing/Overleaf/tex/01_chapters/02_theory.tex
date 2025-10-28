@@ -3,14 +3,14 @@
 \section{Head-Related Impulse Response}
 \label{sec:hrir}
 
-The Head-Related Impulse Response (HRIR) characterizes how an ear receives a sound from a point in space. It is a function of the direction of the sound source relative to the listener's head and ears. The HRIR captures the effects of the head, torso, and outer ear (pinna) on the sound wave as it travels to the ear canal. This means that the HRIR varies for each person due to differences in head and ear shape. To model the HRIR, we can use a simplified model of the head as a rigid sphere. This model allows us to calculate the time delay between the two ears based on the angle of incidence of the sound wave. 
+The Head-Related Impulse Response (HRIR) models how sound is perceived from different directions. The HRIR varies for each person due to differences in head and ear shape, but for this report, we will use a simplified model of the head as a rigid sphere. This model allows us to calculate the time delay between the two ears based on the angle of incidence of the sound wave.
 
 This is called the interaural time difference (ITD). The Woodworth formula is used for calculating this delay at a given angle \( \theta \) and is given by:
 \begin{equation}
   \Delta\tau = \frac{a}{c} (\theta + \sin(\theta))
   \label{eq:woodworth}
 \end{equation}
-where \( a \) is the radius of the head, \( c \) is the speed of sound, and \( \theta \) is the angle of incidence of the sound wave relative to the forward direction of the head. This returns the time delay \( \Delta\tau \) in seconds, where the sound reaches the ear closer to the source first at \( t = 0 \) and the other ear at \( t = \Delta\tau \).
+where \( a \) is the radius of the head, \( c \) is the speed of sound, and \( \theta \) is the angle of incidence of the sound wave relative to the forward direction of the head \cite{svensson2024compendium}. This returns the time delay \( \Delta\tau \) in seconds, where the sound reaches the ear closer to the source first at \( t = 0 \) and the other ear at \( t = \Delta\tau \).
 
 \section{Head-Related Transfer Function}
 \label{sec:hrtf}
@@ -20,7 +20,9 @@ The formula for the Head-Related Transfer Function (HRTF) for a rigid sphere mod
   H_{L/R}(\omega) = \frac{a_{L/R} \cdot j\omega + \beta}{j\omega + \beta} 
   \label{eq:hrtf}
 \end{equation}
-where \( a_{L} = 1 - \sin(\theta) \) for the left ear and \( a_{R} = 1 + \sin(\theta) \) for the right ear, \( \beta = \frac{2c}{a} \), \( c \) is the speed of sound, \( a \) is the radius of the head, and \( \theta \) is the angle of incidence of the sound wave relative to the forward direction of the head. The HRTF describes how the sound wave is filtered by the head and ears before reaching the ear canal. The HRTF can be used to simulate how a sound would be perceived by a listener from a specific direction.
+where \( a_{L} = 1 - \sin(\theta) \) for the left ear and \( a_{R} = 1 + \sin(\theta) \) for the right ear, \( \beta = \frac{2c}{a} \), \( c \) is the speed of sound, \( a \) is the radius of the head, and \( \theta \) is the angle of incidence of the sound wave relative to the forward direction of the head. This simplified rigid-sphere formulation is based on the model proposed by Brown and Duda (1998) and presented in the Directional Hearing assignment for TTT4295 Acoustic Signal Processing \cite{Svensson2025}.
+
+The HRTF describes how the sound wave is filtered by the head and ears before reaching the ear canal. This can be used to simulate how a sound would be perceived by a listener from different directions.
 
 
 \section{Bilinear Transform}
@@ -33,7 +35,7 @@ To implement the analog HRTF model digitally, the bilinear transform is used to 
 where \( \alpha_L = 1 - \sin(\theta) \) and \( \alpha_R = 1 + \sin(\theta) \) are scaling factors
 for the left and right ears, respectively, and \( \beta = \frac{2c}{a} \).
 
-The bilinear transform is defined as:
+The bilinear transform \cite{BilinearTransform} is defined as:
 \begin{equation}
   s = \frac{2}{T} \cdot \frac{z-1}{z+1},
 \end{equation}

@@ -1,12 +1,10 @@
 \chapter{Method and Equipment}
 \label{ch:method_equipment}
 
-For all tasks in this assignment, Python is used as the programming language. The code is organized into separate files for clarity and modularity. The main script, \texttt{main.py}, orchestrates the execution of the different tasks by calling functions defined in other files. The variables for head radius, speed of sound, and sampling frequency are defined in \texttt{main.py} and passed as parameters to the functions. These are the same for all tasks to ensure consistency, and is set to a head radius of \( a = 0.09~\mathrm{m} \), a speed of sound \( c = 343~\mathrm{m/s} \), and a sampling frequency of \( f_s = 44{,}100~\mathrm{Hz} \).
-
 \section{Task 1: HRIR Model}
 \label{sec:task1}
 
-The HRIR model is implemented in Python as described in \autoref{sec:hrir}. The ITD for a given angle of incidence \( \theta \) is calculated using the Woodworth formula (\autoref{eq:woodworth}), which gives the time delay between the two ears in seconds. This delay is then converted to an integer sample delay based on the sampling frequency \( f_s \).
+The HRIR model is implemented using Python as described in \autoref{sec:hrir}. The ITD for any given angle of incidence \( \theta \) is calculated using the Woodworth formula (\autoref{eq:woodworth}), which gives the time delay between the two ears in seconds. This delay is then converted to an integer sample delay based on the sampling frequency \( f_s \).
 
 The HRIR for each ear is represented as a discrete impulse (delta function), with the ear closer to the sound source receiving the impulse at sample~0, and the opposite ear receiving it after the calculated delay. This models the difference in arrival time of a sound wave between the two ears.
 
@@ -47,6 +45,6 @@ The code for this task is shown in \autoref{lst:sound_demo}.
 \section{Equipment and Software}
 \label{sec:equipment_software}
 
+The implementation is carried out using Python, with essential libraries including NumPy for numerical computations, SciPy for signal processing functions, and Matplotlib for visualization. The sound playback is handled using the SoundDevice library, using a sampling frequency of \( f_s = 44{,}100~\mathrm{Hz} \).
 
-
-\section{Verification and Visualization}
+The variables for head radius, speed of sound, and sampling frequency are defined in \texttt{main.py} and passed as parameters to the functions. These are the same for all tasks to ensure consistency, and is set by the assignment to a head radius of \( a = 0.09~\mathrm{m} \), a speed of sound \( c = 343~\mathrm{m/s} \), and a sampling frequency of \( f_s = 44{,}100~\mathrm{Hz} \) \cite{Svensson2025}.
