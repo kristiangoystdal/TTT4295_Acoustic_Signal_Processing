@@ -153,6 +153,23 @@ def plot_hrtf_response_multiple(f_vec_list, H_L_list, H_R_list, angles):
 def plot_hrtfiir_response(A1, B0_L, B1_L, B0_R, B1_R, f_s, angle=90):
     os.makedirs("Overleaf/data/figures/task_3", exist_ok=True)
 
+    print(f"Plotting HRTF IIR response for angle {angle}° with coefficients:")
+    print(
+        f"A1: {A1:.2f}, B0_L: {B0_L:.2f}, B1_L: {B1_L:.2f}, B0_R: {B0_R:.2f}, B1_R: {B1_R:.2f}"
+    )
+
+    # Append coefficients to a csv file for reference
+    file_path = "Overleaf/data/figures/task_3/hrtfiir_coefficients.csv"
+    write_header = not os.path.exists(file_path)
+    with open(file_path, "a") as f:
+        if write_header:
+            f.write("Angle,Coefficient,Value\n")
+        f.write(f"{angle},A1,{A1:.6f}\n")
+        f.write(f"{angle},B0_L,{B0_L:.6f}\n")
+        f.write(f"{angle},B1_L,{B1_L:.6f}\n")
+        f.write(f"{angle},B0_R,{B0_R:.6f}\n")
+        f.write(f"{angle},B1_R,{B1_R:.6f}\n")
+
     w, H_L = freqz([B0_L, B1_L], [1, A1], worN=512, fs=f_s)
     w, H_R = freqz([B0_R, B1_R], [1, A1], worN=512, fs=f_s)
 
@@ -350,4 +367,35 @@ def plot_combined_hrir_freq_multiple(
     plt.ylim(-20, 20)
     plt.tight_layout()
     plt.savefig("Overleaf/data/figures/task_4/combined_hrir_freq_multiple.png")
+    plt.close()
+
+
+# Plot demo sound signal
+def plot_sound_demo(signal_full, f_s):
+    os.makedirs("Overleaf/data/figures/task_5", exist_ok=True)
+
+    signal_left = signal_full[:, 0]
+    signal_right = signal_full[:, 1]
+
+    plt.figure(figsize=(10, 6), dpi=300)
+    time_axis = np.arange(len(signal_left)) / f_s
+
+    # Create two subplots: left above right
+    ax1 = plt.subplot(2, 1, 1)
+    ax1.plot(time_axis, signal_left, label="Left Ear", color="blue")
+    ax1.set_title("Sound Demo Signal - Left Ear")
+    ax1.set_ylabel("Amplitude")
+    ax1.grid(which="both", linestyle="--", linewidth=0.5)
+    ax1.legend()
+
+    ax2 = plt.subplot(2, 1, 2, sharex=ax1)
+    ax2.plot(time_axis, signal_right, label="Right Ear", color="red")
+    ax2.set_title("Sound Demo Signal - Right Ear")
+    ax2.set_xlabel("Time [s]")
+    ax2.set_ylabel("Amplitude")
+    ax2.grid(which="both", linestyle="--", linewidth=0.5)
+    ax2.legend()
+
+    plt.tight_layout()
+    plt.savefig("Overleaf/data/figures/task_5/sound_demo_signal.png")
     plt.close()

@@ -96,11 +96,19 @@ for angle in range(-90, 91, step):
         hrtfiir(angle, head_radius, f_s, c)
     )
 
-    delay_left = np.convolve(hrir_left, [hrtfiir_left_0, hrtfiir_left_1], "full")
-    combined_right = np.convolve(hrir_right, [hrtfiir_right_0, hrtfiir_right_1], "full")
+    filtered_left = lfilter(
+        [hrtfiir_left_0, hrtfiir_left_1], [1, hrtfiir_a], signal_constant
+    )
+    filtered_right = lfilter(
+        [hrtfiir_right_0, hrtfiir_right_1], [1, hrtfiir_a], signal_constant
+    )
+
+    combined_left = np.convolve(filtered_left, hrir_left, "full")
+    combined_right = np.convolve(filtered_right, hrir_right, "full")
 
     # Combine all the segments and play sound
-    duration = 1  # seconds
+    duration = 10  # seconds
+    delay = 5  # seconds
     t = np.linspace(0, duration, int(f_s * duration), endpoint=False)
 
     mono_signal = 0.5 * pink_noise(len(t))
@@ -111,6 +119,15 @@ for angle in range(-90, 91, step):
         full_stereo_signal = stereo_signal
     else:
         full_stereo_signal = np.vstack((full_stereo_signal, stereo_signal))
+
+    # Add delay between angles
+    delay_samples = int(f_s * delay)
+    silence = np.zeros((delay_samples, 2))
+    full_stereo_signal = np.vstack((full_stereo_signal, silence))
+
+full_stereo_signal /= np.max(np.abs(full_stereo_signal))
+
+plot_sound_demo(full_stereo_signal, f_s)
 
 # sd.play(full_stereo_signal, f_s)
 # sd.wait()
